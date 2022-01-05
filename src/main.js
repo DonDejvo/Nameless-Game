@@ -8,7 +8,7 @@ const data = {
             agility: 0,
             firerate: 0,
             multishot: 0,
-            homing: 0
+            homing: 2
         }
     },
     level: 0,

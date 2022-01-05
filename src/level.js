@@ -533,7 +533,7 @@ class PlayerBullet extends Lancelot.Component {
 
         this.damage = 35;
         this.homingRadius = Math.min(1400, 200 + 300 * data.player.upgrades.homing);
-        this.turnSpeed = (((data.player.upgrades.homing + 1) ** 2) - 1) / 3 * 0.04;
+        this.turnSpeed = 0.06 * data.player.upgrades.homing;
         this.lifeTime = 800;
         this.homingStartTime = 80;
         this.lifeTimeCounter = 0;
