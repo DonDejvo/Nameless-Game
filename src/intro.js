@@ -18,7 +18,7 @@ class Intro extends Lancelot.Scene {
         }));
 
         this.interactive.on("mouseup", () => {
-            game.requestFullScreen();
+            // game.requestFullScreen();
             this.hide();
             game.get("Menu").play();
         });
