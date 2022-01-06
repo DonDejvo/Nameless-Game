@@ -131,7 +131,7 @@ class Level extends Lancelot.Scene {
 
     createEnemies(levelData) {
 
-        const playerSafeDist = 550;
+        const playerSafeDist = 500;
 
         const floorTilesFarFromPlayer = this.floorTiles.filter((tile) => Vector.dist(tile.position, this.player.position) >= playerSafeDist);
 
@@ -539,7 +539,7 @@ class PlayerBullet extends Lancelot.Component {
 
         super();
 
-        this.damage = 30;
+        this.damage = 35;
         this.homingRadius = Math.min(1200, 300 * data.player.upgrades.homing);
         this.turnSpeed = 0.03 * data.player.upgrades.homing;
         this.lifeTime = 1000;
@@ -707,7 +707,7 @@ class ShootingEnemy extends Enemy {
         this.maxReloadTime = maxReloadTime;
         this.reloadTime = minReloadTime;
         this.reloadCounter = 0;
-        this.range = 500;
+        this.range = 475;
 
     }
 
@@ -865,10 +865,10 @@ class Goblin extends ShootingEnemy {
 
     constructor() {
 
-        super(250, 2000, 4000);
+        super(200, 2000, 4000);
 
         this.minSpeed = 90;
-        this.maxSpeed = 160;
+        this.maxSpeed = 150;
         this.speed = math.rand(this.minSpeed, this.maxSpeed);
         this.counter = 0;
 
@@ -971,7 +971,7 @@ class Bat extends ShootingEnemy {
 
     constructor() {
 
-        super(400, 2500, 5000);
+        super(300, 2500, 5000);
 
         this.speed = 110;
         this.counter = 0;
