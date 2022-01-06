@@ -12,9 +12,9 @@ class LevelUI extends Lancelot.Scene {
         super(game, "LevelUI", 1, config);
 
         this.createDamageEffect();
-        this.createHpBar(40, 40);
-        this.createEnemiesCounter(320, 50);
-        this.createMenuToggle(40, 40);
+        this.createHpBar(20, 20);
+        this.createEnemiesCounter(280, 35);
+        this.createMenuToggle(20, 20);
         this.createGameOverMessage();
         this.createBlackEffect();
     }
@@ -90,7 +90,7 @@ class LevelUI extends Lancelot.Scene {
 
     createEnemiesCounter(left, top) {
 
-        const fontSize = 30;
+        const fontSize = 24;
 
         this.enemiesCounter = this.create();
 
@@ -98,10 +98,10 @@ class LevelUI extends Lancelot.Scene {
 
         let text;
         this.enemiesCounter.addComponent(text = new Lancelot.drawable.Text({
-            text: "Enemies Left: 0",
+            text: "Enemies left: 0",
             fontSize: fontSize,
             fontFamily: "Quadrit",
-            strokeWidth: 3,
+            strokeWidth: 2,
             align: "left"
         }));
 
@@ -147,7 +147,7 @@ class LevelUI extends Lancelot.Scene {
 
     createGameOverMessage() {
 
-        const fontSize = 90;
+        const fontSize = 75;
 
         this.gameOverMessage = this.create();
 

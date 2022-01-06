@@ -168,15 +168,15 @@ class Menu extends Lancelot.Scene {
         title.addComponent(new Lancelot.drawable.Text({
             text: "NAMELESS GAME",
             fontFamily: "Quadrit",
-            fontSize: 60,
-            strokeWidth: 5,
+            fontSize: 45,
+            strokeWidth: 4,
             zIndex: 1
         }));
     }
 
     createTextField(parent, x, y, text) {
 
-        const w = 288, h = 96;
+        const w = 192, h = 64;
 
         const textField = this.create();
 
@@ -202,8 +202,8 @@ class Menu extends Lancelot.Scene {
         textField.addComponent(label = new Lancelot.drawable.Text({
             text: text,
             fontFamily: "Quadrit",
-            fontSize: 30,
-            strokeWidth: 3,
+            fontSize: 20,
+            strokeWidth: 2,
             zIndex: 1
         }));
 
@@ -240,7 +240,7 @@ class Menu extends Lancelot.Scene {
 
     createArrowButton(parent, x, y, inv, action) {
 
-        const w = 64, h = 96;
+        const w = 42, h = 64;
 
         let points;
 
@@ -285,13 +285,13 @@ class Menu extends Lancelot.Scene {
 
         this.menu = this.create();
 
-        this.createTitle(this.menu, 0, -240);
+        this.createTitle(this.menu, 0, -180);
 
         this.createButton(this.menu, 0, 0, "New Game", () => this.startGame());
 
-        this.createButton(this.menu, 0, 140, "Options", () => this.showOptions());
+        this.createButton(this.menu, 0, 90, "Options", () => this.showOptions());
 
-        this.createButton(this.menu, 0, 280, "Credit", () => this.showCredit());
+        this.createButton(this.menu, 0, 180, "Credit", () => this.showCredit());
 
     }
 
@@ -300,16 +300,16 @@ class Menu extends Lancelot.Scene {
         this.options = this.create();
 
         this.musicLabel = this.createTextField(this.options, 0, 0, "Music: 100%");
-        this.createArrowButton(this.options, 220, 0, 0, () => this.musicUp());
-        this.createArrowButton(this.options, -220, 0, 1, () => this.musicDown());
+        this.createArrowButton(this.options, 150, 0, 0, () => this.musicUp());
+        this.createArrowButton(this.options, -150, 0, 1, () => this.musicDown());
 
-        this.effectsLabel = this.createTextField(this.options, 0, 140, "Effects: 100%");
-        this.createArrowButton(this.options, 220, 140, 0, () => this.effectsUp());
-        this.createArrowButton(this.options, -220, 140, 1, () => this.effectsDown());
+        this.effectsLabel = this.createTextField(this.options, 0, 90, "Effects: 100%");
+        this.createArrowButton(this.options, 150, 90, 0, () => this.effectsUp());
+        this.createArrowButton(this.options, -150, 90, 1, () => this.effectsDown());
 
-        this.detailsToggle = this.createButton(this.options, 0, 280, "Details: High", () => this.toggleDetails());
+        this.detailsToggle = this.createButton(this.options, 0, 180, "Details: High", () => this.toggleDetails());
 
-        this.createButton(this.options, 0, 460, "Back", () => {
+        this.createButton(this.options, 0, 300, "Back", () => {
             if(this.cameFrom == null) {
                 this.hideOptions();
             } else if(this.cameFrom == "Level") {
@@ -318,13 +318,13 @@ class Menu extends Lancelot.Scene {
             }
         });
 
-        this.options.position.y = -200;
+        this.options.position.y = -140;
 
     }
 
     update(dt) {
 
-        this.backgroundImage.position.y -= 100 * dt;
+        this.backgroundImage.position.y -= 60 * dt;
 
         if(this.backgroundImage.position.y <= -this.game.height) {
             this.backgroundImage.position.y += this.game.height;

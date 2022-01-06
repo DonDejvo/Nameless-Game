@@ -34,6 +34,7 @@ class Level extends Lancelot.Scene {
     resetData() {
 
         data.level = 0;
+        data.time = 0.0;
         data.player.hp = data.player.maxhp;
         for(let attr in data.player.upgrades) {
             data.player.upgrades[attr] = 0;
@@ -89,21 +90,19 @@ class Level extends Lancelot.Scene {
 
     checkEnemies() {
 
-        this.game.get("LevelUI").enemiesCounter.getComponent("Text").text = `Enemies Left: ${this.enemiesLeft}`;
+        this.game.get("LevelUI").enemiesCounter.getComponent("Text").text = `Enemies left: ${this.enemiesLeft}`;
 
         if(this.enemiesLeft == 0) {
 
             data.level += 1;
-
-            
 
             this.timeout.set(() => {
                 if(data.level < data.levels.length) {
                     let reward = new Reward(this.game);
                     this.switch("Reward");
                 } else {
-                    this.resetData();
-                    this.switch("Menu");
+                    let victory = new Victory(this.game);
+                    this.switch("Victory");
                 }
             }, 3000);
 
@@ -132,7 +131,7 @@ class Level extends Lancelot.Scene {
 
     createEnemies(levelData) {
 
-        const playerSafeDist = 700;
+        const playerSafeDist = 550;
 
         const floorTilesFarFromPlayer = this.floorTiles.filter((tile) => Vector.dist(tile.position, this.player.position) >= playerSafeDist);
 
@@ -154,10 +153,13 @@ class Level extends Lancelot.Scene {
                         enemy = Slime.create(this, position.x, position.y);
                         break;
                     case "goblin":
+                        enemy = Goblin.create(this, position.x, position.y);
                         break;
                     case "bat":
+                        enemy = Bat.create(this, position.x, position.y);
                         break;
                     case "golem":
+                        enemy = Golem.create(this);
                         break;
                 }
 
@@ -167,7 +169,7 @@ class Level extends Lancelot.Scene {
 
         }
 
-        for(let i = 0; i < 2; ++i) {
+        for(let i = 0; i < Math.min(2, enemies.length); ++i) {
             math.choice(enemies).getComponent("Controller").dropsPotion = true;
         }
 
@@ -208,6 +210,12 @@ class Level extends Lancelot.Scene {
 
     }
 
+    update(dt) {
+
+        data.time += dt;
+
+    }
+
 }
 
 class Player extends Lancelot.Component {
@@ -216,7 +224,7 @@ class Player extends Lancelot.Component {
 
         super();
 
-        this.speed = Math.min(600, 400 + data.player.upgrades.agility * 50);
+        this.speed = Math.min(320, 200 + data.player.upgrades.agility * 30);
         this.dead = false;
         this.shieldCounter = 0;
         this.gun = null;
@@ -233,11 +241,11 @@ class Player extends Lancelot.Component {
 
     receiveDamage(angle) {
 
-        if(this.hasShield()) {
+        if(this.hasShield() || this.scene.enemiesLeft == 0) {
             return;
         }
 
-        this.activateShield(1.5);
+        this.activateShield(1.2);
 
         if(!this.dead) {
             data.player.hp -= 1;
@@ -442,7 +450,7 @@ class Gun extends Lancelot.Component {
 
         for (let i = 0; i < this.bulletsPerShot; ++i) {
 
-            PlayerBullet.create(this.scene, position.x, position.y, this.angle + (i - (this.bulletsPerShot - 1) / 2) * 0.1 + math.rand(-dispersion, dispersion) / 2);
+            PlayerBullet.create(this.scene, position.x, position.y, this.angle + (i - (this.bulletsPerShot - 1) / 2) * 0.2 + math.rand(-dispersion, dispersion) / 2);
 
         }
 
@@ -531,11 +539,11 @@ class PlayerBullet extends Lancelot.Component {
 
         super();
 
-        this.damage = 35;
-        this.homingRadius = Math.min(1400, 200 + 300 * data.player.upgrades.homing);
-        this.turnSpeed = 0.075 * data.player.upgrades.homing;
-        this.lifeTime = 800;
-        this.homingStartTime = 80;
+        this.damage = 30;
+        this.homingRadius = Math.min(1200, 300 * data.player.upgrades.homing);
+        this.turnSpeed = 0.03 * data.player.upgrades.homing;
+        this.lifeTime = 1000;
+        this.homingStartTime = 50;
         this.lifeTimeCounter = 0;
         this.target = null;
         this.active = true;
@@ -609,7 +617,7 @@ class PlayerBullet extends Lancelot.Component {
     static create(scene, x, y, angle) {
 
         const w = 36, h = 6;
-        const speed = 1000;
+        const speed = 700;
         
         const bullet = scene.create();
 
@@ -699,7 +707,7 @@ class ShootingEnemy extends Enemy {
         this.maxReloadTime = maxReloadTime;
         this.reloadTime = minReloadTime;
         this.reloadCounter = 0;
-        this.range = 650;
+        this.range = 500;
 
     }
 
@@ -762,7 +770,7 @@ class Slime extends ShootingEnemy {
         this.maxIdleTime = 2500;
         this.idleTime = this.minIdleTime;
         this.moveTime = 300;
-        this.speed = 500;
+        this.speed = 300;
 
     }
 
@@ -772,7 +780,7 @@ class Slime extends ShootingEnemy {
 
         const angle = target.position.clone().sub(this.position).angle();
 
-        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 250, 0, "green");
+        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 150, 0, "green");
 
     }
 
@@ -850,6 +858,297 @@ class Slime extends ShootingEnemy {
         return enemy;
 
     }
+
+}
+
+class Goblin extends ShootingEnemy {
+
+    constructor() {
+
+        super(250, 2000, 4000);
+
+        this.minSpeed = 90;
+        this.maxSpeed = 160;
+        this.speed = math.rand(this.minSpeed, this.maxSpeed);
+        this.counter = 0;
+
+    }
+
+    shoot() {
+
+        const target = this.scene.player;
+
+        const angle = target.position.clone().sub(this.position).angle();
+
+        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 200, 0.015, "red");
+
+    }
+
+    update(dt) {
+
+        super.update(dt);
+
+        this.counter += dt * 1000;
+
+        if(this.counter >= 1000) {
+            this.counter = 0;
+            this.speed = math.rand(this.minSpeed, this.maxSpeed);
+        }
+
+        const player = this.scene.player;
+
+        const diff = player.position.clone().sub(this.position);
+        const dist = diff.mag();
+
+        const body = this.parent.body;
+
+        if(dist <= this.range && dist > 32) {
+
+            body.velocity = diff.clone().unit().mult(this.speed);
+
+        } else {
+
+            body.velocity.set(0, 0);
+
+        }
+
+    }
+
+    static create(scene, x, y) {
+
+        const enemy = scene.create();
+
+        enemy.position.set(x, y);
+
+        enemy.groupList.add("enemy");
+
+        const w = 64, h = 64;
+
+        let body, sprite;
+
+        enemy.addComponent(sprite = new Lancelot.drawable.Sprite({
+            width: w,
+            height: h,
+            image: {
+                name: "goblin-spritesheet",
+                frameWidth: 16,
+                frameHeight: 16
+            },
+            zIndex: 1
+        }));
+
+        sprite.center.y = h * 0.15;
+
+        sprite.addAnim("idle", [
+            {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 3, y: 0}, {x: 4, y: 0}, {x: 5, y: 0}
+        ]);
+
+        sprite.addAnim("move", [
+            {x: 0, y: 1}, {x: 1, y: 1}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 4, y: 1}, {x: 5, y: 1}
+        ]);
+
+        enemy.addComponent(body = new Lancelot.physics.Box({
+            width: w * 0.6,
+            height: h * 0.7,
+            mass: 1
+        }));
+
+        body.addBehavior("wall", "resolve", {
+            bounce: 1.0
+        });
+
+        enemy.addComponent(new SimpleSpriteController(body, sprite));
+
+        enemy.addComponent(new Goblin(), "Controller");
+
+        return enemy;
+
+    }
+
+}
+
+class Bat extends ShootingEnemy {
+
+    constructor() {
+
+        super(400, 2500, 5000);
+
+        this.speed = 110;
+        this.counter = 0;
+        this.sleeping = true;
+
+    }
+
+    shoot() {
+
+        const count = 2;
+
+        for(let i = 0; i < count; ++i) {
+
+            const angle = 2 * Math.PI * (i / count + Math.random() / count);
+
+            EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 150, 0.035, "yellow");
+
+        }
+
+    }
+
+    update(dt) {
+
+        super.update(dt);
+
+        this.counter += dt * 1000;
+
+        const player = this.scene.player,
+        sprite = this.getComponent("Sprite");
+
+        const diff = player.position.clone().sub(this.position);
+        const dist = diff.mag();
+
+        const body = this.parent.body;
+
+        if(this.sleeping) {
+
+            if(dist <= this.range) {
+                this.sleeping = false;
+            }
+
+        } else {
+
+            if(this.counter >= 1000) {
+                this.counter = 0;
+                if(Math.random() > 0.5 || (body.velocity.x == 0 && body.velocity.y == 0)) {
+                    body.velocity = diff.clone().add(Vector.fromAngle(math.rand(0, Math.PI * 2)).mult(this.range * 0.5)).unit().mult(this.speed);
+                }
+            }
+
+        }
+
+        if(body.velocity.x > 0) {
+            sprite.scale = {x: 1};
+        } else if(body.velocity.x < 0) {
+            sprite.scale = {x: -1};
+        }
+
+    }
+
+    static create(scene, x, y) {
+
+        const enemy = scene.create();
+
+        enemy.position.set(x, y);
+
+        enemy.groupList.add("enemy");
+
+        const w = 64, h = 64;
+
+        let body, sprite;
+
+        enemy.addComponent(sprite = new Lancelot.drawable.Sprite({
+            width: w,
+            height: h,
+            image: {
+                name: "bat-spritesheet",
+                frameWidth: 16,
+                frameHeight: 16
+            },
+            zIndex: 3
+        }));
+
+        sprite.center.y = h * 0.15;
+
+        sprite.addAnim("fly", [
+            {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 3, y: 0}
+        ]);
+
+        sprite.play("fly", 80, true);
+
+        enemy.addComponent(body = new Lancelot.physics.Box({
+            width: w * 0.7,
+            height: h * 0.6,
+            mass: 1
+        }));
+
+        enemy.addComponent(new Bat(), "Controller");
+
+        return enemy;
+
+    }
+
+}
+
+class Golem extends Enemy {
+
+    constructor() {
+
+        super(10000);
+
+        this.state = 0;
+        this.counter = 0;
+
+    }
+    
+    update(dt) {
+
+        this.counter += dt * 1000;
+
+        
+
+    }
+
+    static create(scene) {
+
+        const w = 320, h = 320;
+
+        const golem = scene.create();
+
+        golem.groupList.add("enemy");
+
+        golem.position.set(640, 640);
+
+        let body, sprite;
+    
+            golem.addComponent(body = new Lancelot.physics.Box({
+                width: w * 0.34,
+                height: h * 0.34,
+                mass: 1
+            }));
+
+            body.addBehavior("wall", "resolve", {
+                bounce: 1.0
+            });
+
+            golem.addComponent(sprite = new Lancelot.drawable.Sprite({
+                width: w,
+                height: h,
+                image: {
+                    name: "golem-spritesheet",
+                    frameWidth: 100,
+                    frameHeight: 100
+                },
+                zIndex: 1
+            }));
+
+            sprite.offset.y = -h * 0.04;
+
+            sprite.addAnim("idle", [
+                {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 3, y: 0}, 
+            ]);
+
+            sprite.addAnim("glow", [
+                {x: 0, y: 1}, {x: 1, y: 1}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 4, y: 1}, {x: 5, y: 1}, {x: 6, y: 1}, {x: 7, y: 1}, 
+            ]);
+
+            sprite.addAnim("shoot", [
+                {x: 0, y: 2}, {x: 1, y: 2}, {x: 2, y: 2}, {x: 3, y: 2}, {x: 4, y: 2}, {x: 5, y: 2}, {x: 6, y: 2}, {x: 7, y: 2}, {x: 8, y: 2}, 
+            ]);
+            
+            golem.addComponent(new Golem(), "Controller");
+
+            return golem;
+
+    }
+
 
 }
 
@@ -955,7 +1254,7 @@ class EnemyBullet extends Lancelot.Component {
         super();
 
         this.turnSpeed = turnSpeed;
-        this.lifeTime = 6000;
+        this.lifeTime = 8000;
         this.lifeTimeCounter = 0;
 
     }

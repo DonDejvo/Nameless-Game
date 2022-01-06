@@ -13,18 +13,18 @@ class Reward extends Lancelot.Scene {
 
         super(game, "Reward", 0, config);
 
-        this.createLabel(40);
+        this.createLabel(60);
         this.createCards();
 
     }
 
     createLabel(top) {
 
-        const fontSize = 30;
+        const fontSize = 20;
 
         this.label = this.create();
 
-        this.label.position.y = -this.game.width/2 + fontSize/2 + top;
+        this.label.position.y = -this.game.height/2 + fontSize/2 + top;
 
         this.label.addComponent(new Lancelot.drawable.Text({
             text: "Select your reward",
@@ -64,7 +64,7 @@ class Reward extends Lancelot.Scene {
         math.shuffle(cards);
 
         for(let i = 0; i < Math.min(cards.length, 3); ++i) {
-            const card = Card.create(this, (i - 1) * 240, 120, cards[i]);
+            const card = Card.create(this, (i - 1) * 200, 120, cards[i]);
             this.timeout.set(() => {
                 card.getComponent("Controller").flip();
             }, (i + 1) * 600);
@@ -219,7 +219,7 @@ class Card extends Lancelot.Component {
 
     static create(scene, x, y, cardType) {
 
-        const w = 160, h = 240;
+        const w = 140, h = 220;
         const col1 = "gold", col2 = "goldenrod";
 
         const card = scene.create();
@@ -259,7 +259,7 @@ class Card extends Lancelot.Component {
             text: cardType.desc,
             fontFamily: "Quadrit",
             strokeWidth: 0,
-            fontSize: 20,
+            fontSize: 18,
             align: "left"
         }), "Description");
 
@@ -306,7 +306,7 @@ class CardFace extends Lancelot.drawable.RoundedRect {
         const cardType = this.getComponent("Controller").cardType;
 
         ctx.fillStyle = this.strokeColor.value;
-        ctx.font = "20px Quadrit";
+        ctx.font = "18px Quadrit";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(cardType.title, 0, -this.height * 0.35);

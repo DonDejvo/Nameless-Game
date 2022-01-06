@@ -11,62 +11,80 @@ const data = {
             homing: 0
         }
     },
-    level: 0,
+    level: 7,
+    time: 0.0,
     levels: [
         {
             map: 1,
             enemies: [
-                ["slime", 6],
+                ["slime", 8]
             ]
         },
         {
             map: 2,
             enemies: [
-                ["slime", 8],
+                ["slime", 12]
             ]
         },
         {
             map: 3,
             enemies: [
-                ["slime", 12],
+                ["slime", 18],
+                ["goblin", 2]
             ]
         },
         {
             map: 4,
             enemies: [
-                ["slime", 15],
+                ["slime", 20],
+                ["goblin", 4]
             ]
         },
         {
             map: 5,
             enemies: [
-                ["slime", 18],
+                ["slime", 20],
+                ["goblin", 8]
             ]
         },
         {
             map: 6,
             enemies: [
                 ["slime", 24],
+                ["goblin", 10],
+                ["bat", 2]
             ]
         },
         {
             map: 7,
             enemies: [
-                ["slime", 28],
+                ["slime", 26],
+                ["goblin", 10],
+                ["bat", 4]
             ]
         },
         {
             map: 8,
             enemies: [
-                ["slime", 32],
+                ["slime", 28],
+                ["goblin", 12],
+                ["bat", 6]
+            ]
+        },
+        {
+            map: 9,
+            enemies: [
+                ["slime", 28],
+                ["goblin", 14],
+                ["bat", 10]
             ]
         },
     ]
 };
 
 Lancelot.start({
-    width: 960,
-    height: 960,
+    width: 640,
+    height: 640,
     quality: 1.0,
     controls: {
         active: true,
@@ -99,14 +117,9 @@ function preload() {
     this.load.image("tileset-image", "tilesets/tileset.png");
 
     // maps
-    this.load.json("map1", "maps/map1.json");
-    this.load.json("map2", "maps/map2.json");
-    this.load.json("map3", "maps/map3.json");
-    this.load.json("map4", "maps/map4.json");
-    this.load.json("map5", "maps/map5.json");
-    this.load.json("map6", "maps/map6.json");
-    this.load.json("map7", "maps/map7.json");
-    this.load.json("map8", "maps/map8.json");
+    for(let i = 1; i <= 9; ++i) {
+        this.load.json(`map${i}`, `maps/map${i}.json`);
+    }
 
     // ui
     this.load.image("menu-button", "ui/menu button.png");
@@ -134,6 +147,7 @@ function preload() {
     this.load.image("slime-spritesheet", "spritesheets/slime.png");
     this.load.image("goblin-spritesheet", "spritesheets/goblin.png");
     this.load.image("bat-spritesheet", "spritesheets/bat.png");
+    this.load.image("golem-spritesheet", "spritesheets/golem.png");
 }
 
 function init() {
