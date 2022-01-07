@@ -6,12 +6,12 @@ const data = {
         maxhp: 4,
         upgrades: {
             agility: 0,
-            firerate: 1,
-            multishot: 3,
-            homing: 4
+            firerate: 0,
+            multishot: 0,
+            homing: 0
         }
     },
-    level: 8,
+    level: 0,
     time: 0.0,
     levels: [
         {
