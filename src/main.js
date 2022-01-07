@@ -6,77 +6,78 @@ const data = {
         maxhp: 4,
         upgrades: {
             agility: 0,
-            firerate: 0,
-            multishot: 0,
-            homing: 0
+            firerate: 1,
+            multishot: 3,
+            homing: 4
         }
     },
-    level: 0,
+    level: 8,
     time: 0.0,
     levels: [
         {
             map: 1,
             enemies: [
-                ["slime", 8]
+                ["slime", 5]
             ]
         },
         {
             map: 2,
             enemies: [
-                ["slime", 12]
+                ["slime", 8]
             ]
         },
         {
             map: 3,
             enemies: [
-                ["slime", 18],
+                ["slime", 10],
                 ["goblin", 2]
             ]
         },
         {
             map: 4,
             enemies: [
-                ["slime", 20],
-                ["goblin", 4]
+                ["slime", 13],
+                ["goblin", 3]
             ]
         },
         {
             map: 5,
             enemies: [
-                ["slime", 20],
-                ["goblin", 8]
+                ["slime", 15],
+                ["goblin", 5]
             ]
         },
         {
             map: 6,
             enemies: [
-                ["slime", 24],
-                ["goblin", 10],
-                ["bat", 2]
+                ["slime", 18],
+                ["goblin", 6],
+                ["bat", 1]
             ]
         },
         {
             map: 7,
             enemies: [
-                ["slime", 26],
-                ["goblin", 10],
-                ["bat", 4]
+                ["slime", 21],
+                ["goblin", 7],
+                ["bat", 2]
             ]
         },
         {
             map: 8,
             enemies: [
-                ["slime", 28],
-                ["goblin", 12],
-                ["bat", 6]
+                ["slime", 24],
+                ["goblin", 8],
+                ["bat", 3]
             ]
         },
         {
             map: 9,
             enemies: [
-                ["slime", 28],
-                ["goblin", 14],
-                ["bat", 10]
+                ["slime", 26],
+                ["goblin", 9],
+                ["bat", 4],
+                ["golem", 1]
             ]
         },
     ]

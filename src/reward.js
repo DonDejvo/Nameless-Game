@@ -27,7 +27,7 @@ class Reward extends Lancelot.Scene {
         this.label.position.y = -this.game.height/2 + fontSize/2 + top;
 
         this.label.addComponent(new Lancelot.drawable.Text({
-            text: "Select your reward",
+            text: `Floor ${data.level} cleared`,
             fontSize: fontSize,
             fontFamily: "Quadrit",
             strokeWidth: 0,

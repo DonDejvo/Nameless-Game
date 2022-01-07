@@ -41,7 +41,9 @@ class LevelUI extends Lancelot.Scene {
 
     showGameOver() {
 
-        this.gameOverMessage.getComponent("Text").visible = true;
+        const text = this.gameOverMessage.getComponent("Text");
+        text.visible = true;
+        text.text = `Died on floor ${data.level + 1}`;
 
     }
 
@@ -147,13 +149,13 @@ class LevelUI extends Lancelot.Scene {
 
     createGameOverMessage() {
 
-        const fontSize = 75;
+        const fontSize = 60;
 
         this.gameOverMessage = this.create();
 
         let text;
         this.gameOverMessage.addComponent(text = new Lancelot.drawable.Text({
-            text: "Game Over",
+            text: "Died on Floor 0",
             fontSize: fontSize,
             fontFamily: "Quadrit",
             strokeWidth: 6,

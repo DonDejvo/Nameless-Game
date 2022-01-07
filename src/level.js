@@ -159,7 +159,7 @@ class Level extends Lancelot.Scene {
                         enemy = Bat.create(this, position.x, position.y);
                         break;
                     case "golem":
-                        enemy = Golem.create(this);
+                        enemy = Golem.create(this, position.x, position.y);
                         break;
                 }
 
@@ -169,7 +169,7 @@ class Level extends Lancelot.Scene {
 
         }
 
-        for(let i = 0; i < Math.min(2, enemies.length); ++i) {
+        for(let i = 0; i < Math.min(1 + Math.floor(enemies.length / 10), enemies.length); ++i) {
             math.choice(enemies).getComponent("Controller").dropsPotion = true;
         }
 
@@ -541,7 +541,7 @@ class PlayerBullet extends Lancelot.Component {
 
         this.damage = 35;
         this.homingRadius = Math.min(1200, 300 * data.player.upgrades.homing);
-        this.turnSpeed = 0.03 * data.player.upgrades.homing;
+        this.turnSpeed = 0.04 * data.player.upgrades.homing;
         this.lifeTime = 1000;
         this.homingStartTime = 50;
         this.lifeTimeCounter = 0;
@@ -707,7 +707,7 @@ class ShootingEnemy extends Enemy {
         this.maxReloadTime = maxReloadTime;
         this.reloadTime = minReloadTime;
         this.reloadCounter = 0;
-        this.range = 475;
+        this.range = 450;
 
     }
 
@@ -762,7 +762,7 @@ class Slime extends ShootingEnemy {
 
     constructor() {
 
-        super(100, 1000, 3000);
+        super(100, 2000, 4000);
 
         this.state = 0;
         this.counter = 0;
@@ -865,10 +865,10 @@ class Goblin extends ShootingEnemy {
 
     constructor() {
 
-        super(200, 2000, 4000);
+        super(200, 2500, 4500);
 
-        this.minSpeed = 90;
-        this.maxSpeed = 150;
+        this.minSpeed = 80;
+        this.maxSpeed = 140;
         this.speed = math.rand(this.minSpeed, this.maxSpeed);
         this.counter = 0;
 
@@ -880,7 +880,7 @@ class Goblin extends ShootingEnemy {
 
         const angle = target.position.clone().sub(this.position).angle();
 
-        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 200, 0.015, "red");
+        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 180, 0.01, "red");
 
     }
 
@@ -971,7 +971,7 @@ class Bat extends ShootingEnemy {
 
     constructor() {
 
-        super(300, 2500, 5000);
+        super(300, 3500, 5500);
 
         this.speed = 110;
         this.counter = 0;
@@ -1081,10 +1081,36 @@ class Golem extends Enemy {
 
     constructor() {
 
-        super(10000);
+        super(5000);
 
         this.state = 0;
         this.counter = 0;
+
+    }
+
+    explode(angle) {
+
+        this.parent.body.velocity.set(0, 0);
+
+        const sprite = this.getComponent("Sprite");
+        
+        sprite.scaleTo({ x: Math.sign(sprite.scale.x) * 1.5, y: 1.5 }, 150, "linear", () => {
+
+            sprite.play("die", 140, false);
+
+            this.scene.timeout.set(() => {
+
+                this.parent.remove();
+
+                this.scene.audio.effects.play("enemy-pop-sound");
+
+                for(let i = 0; i < 200; ++i) {
+                    Particle.create(this.scene, this.position.x, this.position.y, math.rand(0, 2 * Math.PI), 350);
+                }
+
+            }, 140 * 14);
+
+        });
 
     }
     
@@ -1096,15 +1122,15 @@ class Golem extends Enemy {
 
     }
 
-    static create(scene) {
+    static create(scene, x, y) {
 
-        const w = 320, h = 320;
+        const w = 400, h = 400;
 
         const golem = scene.create();
 
         golem.groupList.add("enemy");
 
-        golem.position.set(640, 640);
+        golem.position.set(x, y);
 
         let body, sprite;
     
@@ -1142,6 +1168,12 @@ class Golem extends Enemy {
             sprite.addAnim("shoot", [
                 {x: 0, y: 2}, {x: 1, y: 2}, {x: 2, y: 2}, {x: 3, y: 2}, {x: 4, y: 2}, {x: 5, y: 2}, {x: 6, y: 2}, {x: 7, y: 2}, {x: 8, y: 2}, 
             ]);
+
+            sprite.addAnim("die", [
+                {x: 0, y: 7}, {x: 1, y: 7}, {x: 2, y: 7}, {x: 3, y: 7}, {x: 4, y: 7}, {x: 5, y: 7}, {x: 6, y: 7}, {x: 7, y: 7}, {x: 8, y: 7},{x: 9, y: 7}, {x: 10, y: 7}, {x: 11, y: 7}, {x: 12, y: 7}, {x: 13, y: 7}
+            ]);
+
+            sprite.play("idle", 140, true);
             
             golem.addComponent(new Golem(), "Controller");
 
