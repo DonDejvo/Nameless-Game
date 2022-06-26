@@ -5,7 +5,7 @@ const data = {
         hp: 4,
         maxhp: 4,
         upgrades: {
-            agility: 0,
+            agility: 1,
             firerate: 0,
             multishot: 0,
             homing: 0
@@ -17,7 +17,7 @@ const data = {
         {
             map: 1,
             enemies: [
-                ["slime", 5]
+                ["slime", 4]
             ]
         },
         {
@@ -29,63 +29,64 @@ const data = {
         {
             map: 3,
             enemies: [
-                ["slime", 10],
+                ["slime", 12],
                 ["goblin", 2]
             ]
         },
         {
             map: 4,
             enemies: [
-                ["slime", 13],
+                ["slime", 15],
                 ["goblin", 3]
             ]
         },
         {
             map: 5,
             enemies: [
-                ["slime", 15],
+                ["slime", 21],
                 ["goblin", 5]
             ]
         },
         {
             map: 6,
             enemies: [
-                ["slime", 18],
-                ["goblin", 6],
-                ["bat", 1]
+                ["slime", 24],
+                ["goblin", 7],
+                ["bat", 3]
             ]
         },
         {
             map: 7,
             enemies: [
-                ["slime", 21],
-                ["goblin", 7],
-                ["bat", 2]
+                ["slime", 27],
+                ["goblin", 9],
+                ["bat", 4]
             ]
         },
         {
             map: 8,
             enemies: [
-                ["slime", 24],
-                ["goblin", 8],
-                ["bat", 3]
+                ["slime", 28],
+                ["goblin", 10],
+                ["bat", 6],
+                ["golem", 1]
             ]
         },
         {
             map: 9,
             enemies: [
-                ["slime", 26],
-                ["goblin", 9],
-                ["bat", 4],
-                ["golem", 1]
+                ["slime", 29],
+                ["goblin", 11],
+                ["bat", 8],
+                ["golem", 2]
             ]
         },
     ]
 };
 
 Lancelot.start({
-    width: 640,
-    height: 640,
+    width: 960,
+    height: 1440,
     quality: 1.0,
     controls: {
         active: true,
@@ -142,6 +143,8 @@ function preload() {
     this.load.audio("heal-sound", "audio/sounds/health pack.wav");
 
     // music
+    this.load.audio("menu-music", "audio/briefing.ogg");
+    this.load.audio("bg-music", "audio/industrial_synthdestroyer.mp3");
 
     // spritesheets
     this.load.image("knight-spritesheet", "spritesheets/knight.png");

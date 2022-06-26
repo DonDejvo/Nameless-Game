@@ -44,6 +44,10 @@ class Level extends Lancelot.Scene {
 
     play() {
         super.play();
+
+        this.audio.music.set("bg-music");
+        this.audio.music.play();
+
         this.game.get("LevelUI").play();
         this.checkEnemies();
     }
@@ -224,7 +228,7 @@ class Player extends Lancelot.Component {
 
         super();
 
-        this.speed = Math.min(320, 200 + data.player.upgrades.agility * 30);
+        this.speed = 300 + data.player.upgrades.agility * 50;
         this.dead = false;
         this.shieldCounter = 0;
         this.gun = null;
@@ -423,9 +427,9 @@ class Gun extends Lancelot.Component {
         super();
 
         this.player = player;
-        this.reloadTime = Math.max(200, 600 - 100 * data.player.upgrades.firerate);
+        this.reloadTime = 400 - 80 * data.player.upgrades.firerate;
         this.reloadCounter = 0;
-        this.bulletsPerShot = Math.min(5, 1 + data.player.upgrades.multishot);
+        this.bulletsPerShot = 1 + data.player.upgrades.multishot;
         this.shooting = false;
         this.angle = 0;
 
@@ -446,7 +450,7 @@ class Gun extends Lancelot.Component {
     shoot() {
 
         const position = this.getShootPosition();
-        const dispersion = 0.3;
+        const dispersion = 0.0;
 
         for (let i = 0; i < this.bulletsPerShot; ++i) {
 
@@ -539,9 +543,9 @@ class PlayerBullet extends Lancelot.Component {
 
         super();
 
-        this.damage = 35;
-        this.homingRadius = Math.min(1200, 300 * data.player.upgrades.homing);
-        this.turnSpeed = 0.04 * data.player.upgrades.homing;
+        this.damage = 50;
+        this.homingRadius = 500 * data.player.upgrades.homing;
+        this.turnSpeed = 0.08 * data.player.upgrades.homing;
         this.lifeTime = 1000;
         this.homingStartTime = 50;
         this.lifeTimeCounter = 0;
@@ -617,7 +621,7 @@ class PlayerBullet extends Lancelot.Component {
     static create(scene, x, y, angle) {
 
         const w = 36, h = 6;
-        const speed = 700;
+        const speed = 1000;
         
         const bullet = scene.create();
 
@@ -707,7 +711,7 @@ class ShootingEnemy extends Enemy {
         this.maxReloadTime = maxReloadTime;
         this.reloadTime = minReloadTime;
         this.reloadCounter = 0;
-        this.range = 450;
+        this.range = 800;
 
     }
 
@@ -762,15 +766,15 @@ class Slime extends ShootingEnemy {
 
     constructor() {
 
-        super(100, 2000, 4000);
+        super(150, 1500, 3500);
 
         this.state = 0;
         this.counter = 0;
-        this.minIdleTime = 1500;
-        this.maxIdleTime = 2500;
+        this.minIdleTime = 400;
+        this.maxIdleTime = 1600;
         this.idleTime = this.minIdleTime;
         this.moveTime = 300;
-        this.speed = 300;
+        this.speed = 450;
 
     }
 
@@ -780,7 +784,7 @@ class Slime extends ShootingEnemy {
 
         const angle = target.position.clone().sub(this.position).angle();
 
-        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 150, 0, "green");
+        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 230, 0, "green");
 
     }
 
@@ -865,10 +869,10 @@ class Goblin extends ShootingEnemy {
 
     constructor() {
 
-        super(200, 2500, 4500);
+        super(400, 1000, 3000);
 
-        this.minSpeed = 80;
-        this.maxSpeed = 140;
+        this.minSpeed = 120;
+        this.maxSpeed = 210;
         this.speed = math.rand(this.minSpeed, this.maxSpeed);
         this.counter = 0;
 
@@ -880,7 +884,7 @@ class Goblin extends ShootingEnemy {
 
         const angle = target.position.clone().sub(this.position).angle();
 
-        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 180, 0.01, "red");
+        EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 320, 0.03, "red");
 
     }
 
@@ -971,9 +975,9 @@ class Bat extends ShootingEnemy {
 
     constructor() {
 
-        super(300, 3500, 5500);
+        super(700, 2000, 4000);
 
-        this.speed = 110;
+        this.speed = 160;
         this.counter = 0;
         this.sleeping = true;
 
@@ -987,7 +991,7 @@ class Bat extends ShootingEnemy {
 
             const angle = 2 * Math.PI * (i / count + Math.random() / count);
 
-            EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 150, 0.035, "yellow");
+            EnemyBullet.create(this.scene, this.position.x, this.position.y, angle, 270, 0.08, "yellow");
 
         }
 
@@ -1077,14 +1081,141 @@ class Bat extends ShootingEnemy {
 
 }
 
+class StateMachine {
+
+    static State = class {
+
+        begin() { }
+
+        update(dt) { }
+
+        end() { }
+
+        check(indicator) {
+            return indicator(this);
+        }
+    }
+
+    constructor() {
+        this.currentState = null;
+        this.states = new Map();
+    }
+
+    addState(name, state) {
+
+        const wrapper = StateMachine.Wrapper(state);
+        this.states.set(name, wrapper);
+    }
+
+    setCurrent(name) {
+        const wrapper = this.states.get(name);
+        wrapper.state.begin();
+        if (this.currentState) {
+            this.currentState.state.end();
+        }
+        this.currentState = wrapper;
+    }
+
+    addRelation(from, to, indicator) {
+        const wrapperFrom = this.states.get(from);
+        const wrapperTo = this.states.get(to);
+        wrapperFrom.relations.push(StateMachine.Relation(wrapperTo, indicator));
+    }
+
+    update(dt) {
+        const { state, relations } = this.currentState;
+        state.update(dt);
+        for (let rel of relations) {
+            if (state.check(rel.indicator)) {
+                state.end();
+                rel.to.state.begin();
+                this.currentState = rel.to;
+                break;
+            }
+        }
+    }
+
+    static Wrapper(state) {
+        return {
+            state: state,
+            relations: []
+        };
+    }
+
+    static Relation(to, indicator) {
+        return {
+            to: to,
+            indicator: indicator
+        };
+    }
+
+}
+
+class GolemState extends StateMachine.State {
+
+    constructor(golem) {
+        super();
+        this.golem = golem;
+    }
+
+}
+
+class IdleState extends GolemState {
+
+    constructor(golem) {
+        super(golem);
+
+        this.counter = 0;
+    }
+
+    begin() {
+        this.counter = 0;
+        this.golem.parent.body.velocity.set(0, 0);
+        const cnt = 8;
+        for(let i = 0; i < cnt; ++i) {
+            const ang = Math.PI * 2 * i / cnt;
+            EnemyBullet.create(this.golem.parent.scene, this.golem.parent.position.x, this.golem.parent.position.y, ang, 300, 0.02, "violet");
+        }
+    }
+
+    update(dt) {
+        this.counter += dt * 1000;
+    }
+
+}
+
+class MoveState extends GolemState {
+
+    constructor(golem) {
+        super(golem);
+
+        this.counter = 0;
+        this.state = 0;
+    }
+
+    begin() {
+        this.golem.parent.body.velocity = Vector.fromAngle(math.rand(0, Math.PI * 2)).mult(this.golem.speed);
+    }
+
+    update(dt) {
+        this.counter += dt * 1000;
+
+        if(this.counter > 800) {
+            this.counter = 0;
+            this.begin();
+        }
+    }
+
+}
+
 class Golem extends Enemy {
 
     constructor() {
 
-        super(5000);
+        super(20000);
 
-        this.state = 0;
-        this.counter = 0;
+        this.speed = 400;
+        this.sm = new StateMachine();
 
     }
 
@@ -1116,9 +1247,7 @@ class Golem extends Enemy {
     
     update(dt) {
 
-        this.counter += dt * 1000;
-
-        
+        this.sm.update(dt);
 
     }
 
@@ -1175,7 +1304,28 @@ class Golem extends Enemy {
 
             sprite.play("idle", 140, true);
             
-            golem.addComponent(new Golem(), "Controller");
+            let controller;
+            golem.addComponent(controller = new Golem(), "Controller");
+
+            controller.sm.addState("move", new MoveState(controller));
+            controller.sm.addState("idle", new IdleState(controller));
+            controller.sm.addRelation("move", "idle", (state) => {
+                if(
+                    (state.state == 0 && controller.hp <= 16000) ||
+                    (state.state == 1 && controller.hp <= 12000) ||
+                    (state.state == 2 && controller.hp <= 8000) ||
+                    (state.state == 3 && controller.hp <= 4000)
+                ) {
+                    state.state += 1;
+                    return true;
+                }
+                return false;
+            });
+            controller.sm.addRelation("idle", "move", (state) => {
+                return state.counter >= 5000;
+            });
+
+            controller.sm.setCurrent("move");
 
             return golem;
 
