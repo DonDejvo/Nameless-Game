@@ -28,9 +28,6 @@ class Menu extends Lancelot.Scene {
 
         super.play();
 
-        this.audio.music.set("menu-music");
-        this.audio.music.play();
-
         this.cameFrom = cameFrom;
 
         if(this.cameFrom == "Level") {

@@ -21,6 +21,8 @@ class Intro extends Lancelot.Scene {
             // game.requestFullScreen();
             this.hide();
             game.get("Menu").play();
+            this.audio.music.set("menu-music");
+            this.audio.music.play();
         });
 
     }

@@ -45,7 +45,7 @@ class Level extends Lancelot.Scene {
     play() {
         super.play();
 
-        this.audio.music.set("bg-music");
+        //this.audio.music.set("bg-music");
         this.audio.music.play();
 
         this.game.get("LevelUI").play();

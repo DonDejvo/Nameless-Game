@@ -75,8 +75,8 @@ class Reward extends Lancelot.Scene {
     play() {
         super.play();
 
-        this.audio.music.set("menu-music");
-        this.audio.music.play();
+        //this.audio.music.set("menu-music");
+        //this.audio.music.play();
     }
 
 }

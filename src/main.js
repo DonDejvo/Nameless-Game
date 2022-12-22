@@ -86,7 +86,7 @@ const data = {
 
 Lancelot.start({
     width: 960,
-    height: 1440,
+    height: 640,
     quality: 1.0,
     controls: {
         active: true,
