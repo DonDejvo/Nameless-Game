@@ -103,12 +103,12 @@ function preload() {
     const info = document.querySelector(".info");
 
     this.load.onProgress((value, path) => {
-        
+
         progressBar.style.width = (value * 100) + "%";
         info.textContent = path;
 
     });
-    
+
     this.load.setPath("res");
 
     // fonts
@@ -119,7 +119,7 @@ function preload() {
     this.load.image("tileset-image", "tilesets/tileset.png");
 
     // maps
-    for(let i = 1; i <= 9; ++i) {
+    for (let i = 1; i <= 9; ++i) {
         this.load.json(`map${i}`, `maps/map${i}.json`);
     }
 
@@ -143,7 +143,7 @@ function preload() {
     this.load.audio("heal-sound", "audio/sounds/health pack.wav");
 
     // music
-    this.load.audio("menu-music", "audio/briefing.ogg");
+    this.load.audio("menu-music", "audio/briefing.mp3");
     this.load.audio("bg-music", "audio/industrial_synthdestroyer.mp3");
 
     // spritesheets
