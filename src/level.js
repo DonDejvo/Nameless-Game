@@ -322,16 +322,16 @@ class Player extends Lancelot.Component {
 
         const vel = new Vector();
 
-        if (this.scene.isKeyPressed("ArrowRight")) {
+        if (this.scene.isKeyPressed("d")) {
             vel.x = 1;
-        } else if (this.scene.isKeyPressed("ArrowLeft")) {
+        } else if (this.scene.isKeyPressed("a")) {
             vel.x = -1;
         } else {
             vel.x = 0;
         }
-        if (this.scene.isKeyPressed("ArrowUp")) {
+        if (this.scene.isKeyPressed("w")) {
             vel.y = -1;
-        } else if (this.scene.isKeyPressed("ArrowDown")) {
+        } else if (this.scene.isKeyPressed("s")) {
             vel.y = 1;
         } else {
             vel.y = 0;
